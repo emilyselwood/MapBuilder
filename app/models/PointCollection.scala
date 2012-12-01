@@ -10,8 +10,6 @@ case class PointCollection(id : Int, name : String,
            zoomLevel : Int,
            mapType : String) {
 
-
-
 }
 
 object PointCollection {

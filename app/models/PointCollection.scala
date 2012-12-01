@@ -2,10 +2,11 @@ package models
 
 import play.api.db.DB
 import anorm._
+import play.api.Play.current
 
 
 case class PointCollection(id : Int, name : String,
-          centerPointX : Float, centerPointY : Float,
+          centerPointX : Double, centerPointY : Double,
            zoomLevel : Int,
            mapType : String) {
 
@@ -14,9 +15,10 @@ case class PointCollection(id : Int, name : String,
 }
 
 object PointCollection {
+
   def getAll() : List[PointCollection] = {
-    /*DB.withConnection { implicit c =>
-      val query = SQL(
+    DB.withConnection { implicit c =>
+      /*val query = SQL(
         """SELECT id,
           |   name,
           |   description,
@@ -28,18 +30,18 @@ object PointCollection {
         """.stripMargin
       )
 
-      query().map { row =>
-        PointCollection(row[Int]("id"),
+      query().map ( row =>
+        PointCollection(
+          row[Int]("id"),
           row[String]("name"),
-          row[Float]("centerX"),
-          row[Float]("centerY"),
+          row[Double]("centerX"),
+          row[Double]("centerY"),
           row[Int]("zoomLevel"),
           row[String]("defaultStyle")
-        ).toList
-      }
-
-      }*/
-    List.empty[PointCollection]
-
+        )
+      ).toList*/
+      List.empty[PointCollection]
+    }
   }
+
 }

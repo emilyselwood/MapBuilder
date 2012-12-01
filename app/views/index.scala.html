@@ -13,6 +13,9 @@
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDUheea5SZUTCIeHIHlVOrvwA_FSJFi4gA&sensor=false">
     </script>
     <script type="text/javascript">
+
+        var map;
+
         function initialize() {
             // set up the headers and columns
             $('#header').css('height:40px');
@@ -37,7 +40,22 @@
                 }
                 }
             };
-            var map = new google.maps.Map($("#map_canvas").get(0), mapOptions);
+            map = new google.maps.Map($("#map_canvas").get(0), mapOptions);
+
+            google.maps.event.addListener(map, 'click', function(event) {
+                placeMarker(event.latLng);
+            });
+
+
+        }
+
+        function placeMarker(location) {
+            var marker = new google.maps.Marker({
+                position : location,
+                map: map
+            });
+
+            map.setCenter(location);
         }
     </script>
 

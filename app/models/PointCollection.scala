@@ -8,7 +8,8 @@ import play.api.Play.current
 case class PointCollection(id : Int, name : String,
           centerPointX : Double, centerPointY : Double,
            zoomLevel : Int,
-           mapType : String) {
+           mapType : String,
+           points : List[Geometry] = List()) {
 
 }
 
@@ -16,7 +17,7 @@ object PointCollection {
 
   def getAll() : List[PointCollection] = {
     DB.withConnection { implicit c =>
-      /*val query = SQL(
+      val query = SQL(
         """SELECT id,
           |   name,
           |   description,
@@ -37,8 +38,8 @@ object PointCollection {
           row[Int]("zoomLevel"),
           row[String]("defaultStyle")
         )
-      ).toList*/
-      List.empty[PointCollection]
+      ).toList
+      //List.empty[PointCollection]
     }
   }
 

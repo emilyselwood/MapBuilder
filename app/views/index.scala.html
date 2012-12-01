@@ -65,8 +65,9 @@
 					google.maps.event.addListener(marker, 'drag', function (dragEvent) {
 						poly.getPath().setAt(markerIndex, dragEvent.latLng);
 					});
-				poly.getPath().push(clickEvent.latLng);
-			}
+				    poly.getPath().push(clickEvent.latLng);
+			    });
+            }
 
     </script>
 

@@ -1,0 +1,18 @@
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0
+}
+
+#header {
+    height:40px;
+}
+
+.title {
+    font-size: 20px;
+}
+
+#sideBar {
+    width:100px;
+    float:left;
+}

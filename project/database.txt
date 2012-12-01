@@ -1,0 +1,34 @@
+# this is the collection of sql files that are needed to build the database.
+# should be run before the web app is first run.
+# if this goes any where we need to make this more useful.
+
+CREATE DATABASE mapbuilder
+  WITH ENCODING='UTF8'
+       OWNER=postgres
+       LC_COLLATE='en_GB.UTF-8'
+       CONNECTION LIMIT=-1;
+
+
+-- Table: "PointCollections"
+
+-- DROP TABLE "PointCollections";
+
+CREATE TABLE "PointCollections"
+(
+  id integer NOT NULL,
+  name character varying(250),
+  description character varying(4048),
+  "centerX" numeric,
+  "centerY" numeric,
+  "zoomLevel" integer,
+  "defaultStyle" integer,
+  CONSTRAINT "PointCollectionPk" PRIMARY KEY (id )
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE "PointCollections"
+  OWNER TO postgres;
+
+
+

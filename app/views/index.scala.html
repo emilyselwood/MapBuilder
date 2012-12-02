@@ -72,6 +72,42 @@
         //Polygon end here
         }
 
+        function staticmapimage()
+        {
+            var centerPoint = map.getCenter();
+            var mapTypeId = map.getMapTypeId();
+            var mapType;
+            if(mapTypeId == google.maps.MapTypeId.ROADMAP) {
+                mapType = "Road"
+            }
+            else if(mapTypeId == google.maps.MapTypeId.SATELLITE) {
+                mapType = "Sat"
+            }
+            else if(mapTypeId == google.maps.MapTypeId.HYBRID) {
+                mapType = "Hybrid"
+            }
+
+            // next build the json object to send back
+            var result = {
+            id : @pointCollection.id,
+            mapName : "@pointCollection.name",
+            description : "",
+            centerX : centerPoint.lat(),
+            centerY : centerPoint.lng(),
+            zoomLevel : map.getZoom(),
+            mapType : mapType
+            };
+
+            // now use jquery to send the ajax request to our endpoint.
+            alert(JSON.stringify(result));
+            $.ajax({
+            type: 'POST',
+            url: '/staticmap',
+            data: JSON.stringify(result),
+            processData: false
+            });
+
+        }
 
         function saveMap() {
             // first get the data we are going to try and send back.
@@ -115,7 +151,8 @@
 <body onload="initialize()">
     <div id="header"><p class="title">Map Builder ( @pointCollection.name )</p></div>
     <div id="mainBody">
-        <div id="sideBar"> <a onclick="saveMap()">save</a></div>
+        <div id="sideBar"> <a onclick="saveMap()">save</a>
+        <a href="/staticmap" >Download</a></div>
         <div id="map_canvas"></div>
     </div>
 

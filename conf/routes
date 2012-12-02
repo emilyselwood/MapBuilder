@@ -3,9 +3,9 @@
 # ~~~~
 
 # Home page
-POST    /savePointCollection        controllers.Application.savePointCollection()
-GET     /                           controllers.Application.index
-GET     /StaticMap                  controllers.Application.staticmap
+POST    /savePointCollection                           controllers.Application.savePointCollection()
+GET     /                                              controllers.Application.index
+GET    /staticmap                                      controllers.Application.staticmap
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

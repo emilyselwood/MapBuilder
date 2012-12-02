@@ -18,9 +18,6 @@ object Application extends Controller {
     pointCollections.head
   }
 
-
-
-
   def index = Action {
     try {
       Ok(views.html.index(working))
@@ -30,16 +27,24 @@ object Application extends Controller {
     }
   }
 
-  def staticmap = Action {
+//center=@pointCollection&maptype=hybrid&size=640x640&sensor=false
+//http://maps.googleapis.com/maps/api/streetview?location=52.584857,-0.23284000000001015&heading=70.13293293792583&fov=90&pitch=5&size=640x640&sensor=false
+//<a onclick="staticmapimage()">Static Map</a>
+//def staticmap (pointCollections:String) = Action { request =>
+
+  def staticmap = Action { request =>
       try {
-        Ok(views.html.staticmap(working, pointCollections))
+            //val id = (request.body \ "id").as[String]
+            println("values is " + pointCollections);
+            //val pMap = PointCollection(0, "Default PointCollection", 0f, 0f, 3, "Sat")
+            Ok(views.html.staticmap())
       }
       catch {
         case NonFatal(e) => InternalServerError(e.getMessage)
       }
     }
 
-  def savePointCollection = Action { request =>
+  def savePointCollection = Action(parse.tolerantJson) { request =>
 
 
     val id = (request.body \ "id").as[Long]

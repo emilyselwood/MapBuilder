@@ -23,7 +23,7 @@ object Application extends Controller {
 
   def index = Action {
     try {
-      Ok(views.html.index(working, pointCollections))
+      Ok(views.html.index(working))
     }
     catch {
       case NonFatal(e) => InternalServerError(e.getMessage)
@@ -41,28 +41,26 @@ object Application extends Controller {
 
   def savePointCollection = Action { request =>
 
-    request.body.asJson.map { json =>
-      println("saving a map *\\o/*")
-      val id = (json \ "id").as[Long]
-      val name = (json \ "name").as[String]
-      //val description = (request.body \ "description").asOpt[String]
 
-      val centerX = (json \ "centerX").as[Double]
-      val centerY = (json \ "centerY").as[Double]
+    val id = (request.body \ "id").as[Long]
 
-      val zoomLevel = (json \ "zoomLevel").as[Int]
+    //val description = (request.body \ "description").asOpt[String]
 
-      val mapType = (json \ "mapType").as[String]
+    val centerX = (request.body \ "centerX").as[Double]
+    val centerY = (request.body \ "centerY").as[Double]
 
-      val newPoint = PointCollection(id, name, centerX, centerY, zoomLevel, mapType)
+    val zoomLevel = (request.body \ "zoomLevel").as[Int]
 
-      PointCollection.update(newPoint)
+    val mapType = (request.body \ "mapType").as[String]
+    val name = (request.body \ "mapName").as[String]
+    val newPoint = PointCollection(id, name, centerX, centerY, zoomLevel, mapType)
 
-      working = newPoint
-      Ok
-    }.getOrElse {
-      BadRequest("that wasn't json data: " + request.body)
-    }
+
+    PointCollection.update(newPoint)
+    println("saving a map *\\o/*")
+    working = newPoint
+    Ok
+
   }
 
 

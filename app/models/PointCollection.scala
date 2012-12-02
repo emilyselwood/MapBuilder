@@ -3,9 +3,10 @@ package models
 import play.api.db.DB
 import anorm._
 import play.api.Play.current
+import java.math.BigDecimal
 
 
-case class PointCollection(id : Int, name : String,
+case class PointCollection(var id : Long, name : String,
           centerPointX : Double, centerPointY : Double,
            zoomLevel : Int,
            mapType : String,
@@ -16,30 +17,94 @@ case class PointCollection(id : Int, name : String,
 object PointCollection {
 
   def getAll() : List[PointCollection] = {
+
     DB.withConnection { implicit c =>
+
       val query = SQL(
         """SELECT id,
           |   name,
           |   description,
-          |   \"centerX\",
-          |   \"centerY\",
-          |   \"zoomLevel\",
-          |   \"defaultStyle\"
-          |FROM \"PointCollections\";
+          |   "centerX",
+          |   "centerY",
+          |   "zoomLevel",
+          |   "defaultStyle"
+          |FROM "PointCollections";
         """.stripMargin
       )
 
-      query().map ( row =>
-        PointCollection(
-          row[Int]("id"),
-          row[String]("name"),
-          row[Double]("centerX"),
-          row[Double]("centerY"),
-          row[Int]("zoomLevel"),
-          row[String]("defaultStyle")
-        )
-      ).toList
-      //List.empty[PointCollection]
+      try {
+        query().map ( row =>
+          PointCollection(
+            row[Long]("id"),
+            row[String]("name"),
+            row[BigDecimal]("centerX").doubleValue(),
+            row[BigDecimal]("centerY").doubleValue(),
+            row[Int]("zoomLevel"),
+            row[String]("defaultStyle")
+          )
+        ).toList
+      }
+      catch {
+        case e : Exception =>
+          println("there was an exception" + e.getMessage)
+          List()
+      }
+    }
+  }
+
+  def update(point : PointCollection) {
+    DB.withConnection { implicit c =>
+      val query = SQL(
+        """
+          |update "PointCollections"
+          |set name = {name},
+          |    description = null,
+          |    centerX = {centerX},
+          |    centerY = {centerY},
+          |    zoomLevel = {zoomLevel},
+          |    defaultStyle = {defaultStyle}
+          |WHERE id = {id}
+          |
+        """.stripMargin)
+
+      query.on(("name"  -> point.name),
+        ("centerX"      -> point.centerPointX),
+        ("centerY"      -> point.centerPointY),
+        ("zoomLevel"    -> point.zoomLevel),
+        ("defaultStyle" -> point.mapType)
+      )
+
+      query.executeUpdate()
+    }
+  }
+
+  def insert(point : PointCollection) : PointCollection = {
+
+    DB.withConnection { implicit c =>
+      val query = SQL(
+        """
+          |insert into "PointCollections"(
+          |   id,
+          |   name,
+          |   "description",
+          |   "centerX",
+          |   "centerY",
+          |   "zoomLevel",
+          |   "defaultStyle")
+          |values( {name}, {centerX}, {centerY}, {zoomLevel}, {defaultStyle} );
+          |
+        """.stripMargin)
+
+      query.on(("name"  -> point.name),
+        ("centerX"      -> point.centerPointX),
+        ("centerY"      -> point.centerPointY),
+        ("zoomLevel"    -> point.zoomLevel),
+        ("defaultStyle" -> point.mapType)
+      )
+
+      point.id = query.executeInsert().getOrElse(-1l)
+
+      point
     }
   }
 

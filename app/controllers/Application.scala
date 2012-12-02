@@ -38,7 +38,7 @@ object Application extends Controller {
       }
     }
 
-  def savePointCollection = Action { request =>
+  def savePointCollection = Action(parse.tolerantJson) { request =>
 
 
     val id = (request.body \ "id").as[Long]

@@ -1,4 +1,4 @@
-@(pointCollection : PointCollection, pointCollections : List[PointCollection])
+@(pointCollection : PointCollection)
 <!DOCTYPE html>
 <html>
 <head>
@@ -93,7 +93,7 @@
             // next build the json object to send back
             var result = {
                 id : @pointCollection.id,
-                name : "@pointCollection.name",
+                mapName : "@pointCollection.name",
                 description : "",
                 centerX : centerPoint.lat(),
                 centerY : centerPoint.lng(),
@@ -101,13 +101,19 @@
                 mapType : mapType
             };
             // now use jquery to send the ajax request to our endpoint.
-            $.post('/savePointCollection',result, function(data){ alert(data); });
+            alert(JSON.stringify(result));
+            $.ajax({
+                type: 'POST',
+                url: '/savePointCollection',
+                data: JSON.stringify(result),
+                processData: false
+            });
         }
     </script>
 </head>
 
 <body onload="initialize()">
-    <div id="header"><p class="title">Map Builder ( @pointCollection.name ) @pointCollections.length</p></div>
+    <div id="header"><p class="title">Map Builder ( @pointCollection.name )</p></div>
     <div id="mainBody">
         <div id="sideBar"> <a onclick="saveMap()">save</a></div>
         <div id="map_canvas"></div>

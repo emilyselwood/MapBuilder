@@ -54,25 +54,28 @@ object PointCollection {
 
   def update(point : PointCollection) {
     DB.withConnection { implicit c =>
+
+
       val query = SQL(
         """
           |update "PointCollections"
-          |set name = {name},
+          |set "name" = {mapName},
           |    description = null,
-          |    centerX = {centerX},
-          |    centerY = {centerY},
-          |    zoomLevel = {zoomLevel},
-          |    defaultStyle = {defaultStyle}
+          |    "centerX" = {centerX},
+          |    "centerY" = {centerY},
+          |    "zoomLevel" = {zoomLevel},
+          |    "defaultStyle" = {defaultStyle}
           |WHERE id = {id}
           |
-        """.stripMargin)
-
-      query.on(("name"  -> point.name),
+        """.stripMargin).on(
+        ("mapName"      -> point.name),
         ("centerX"      -> point.centerPointX),
         ("centerY"      -> point.centerPointY),
         ("zoomLevel"    -> point.zoomLevel),
-        ("defaultStyle" -> point.mapType)
+        ("defaultStyle" -> point.mapType),
+        ("id"           -> point.id)
       )
+
 
       query.executeUpdate()
     }

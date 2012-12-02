@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-POST    /savePointCollection        controllers.Application.savePointCollection
+POST    /savePointCollection        controllers.Application.savePointCollection()
 GET     /                           controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path

@@ -29,7 +29,17 @@ object Application extends Controller {
     }
   }
 
-  def savePointCollection = Action(parse.tolerantJson) { request =>
+  def staticmap = Action {
+      try {
+        Ok(views.html.staticmap(working, pointCollections))
+      }
+      catch {
+        case NonFatal(e) => InternalServerError(e.getMessage)
+      }
+    }
+
+  def savePointCollection = Action { request =>
+
 
     val id = (request.body \ "id").as[Long]
 

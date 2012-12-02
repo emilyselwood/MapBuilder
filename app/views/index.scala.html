@@ -1,6 +1,6 @@
 @(pointCollection : PointCollection)
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
@@ -15,6 +15,9 @@
     <script type="text/javascript">
 
         var map;
+
+        var currentLine;
+        var existingLines = new Array();
 
         function initialize() {
             // set up the headers and columns
@@ -45,32 +48,33 @@
 
         //Polygon start here
         //TODO: allow to draw multiple polygons
-			var isClosed = false;
-			var poly = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
-            google.maps.event.addListener(map, 'click', function (clickEvent)
+	    google.maps.event.addListener(map, 'click', function (clickEvent)
             {
-                if (isClosed)
-                    return;
-                var markerIndex = poly.getPath().length;
+                if(! currentLine) {
+                    currentLine = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
+                }
+
+                var markerIndex = currentLine.getPath().length;
                 var isFirstMarker = markerIndex === 0;
-                var marker = new google.maps.Marker({ map: map, position: clickEvent.latLng, draggable: true });
+                var marker = new google.maps.Marker({ map: map, position: clickEvent.latLng, draggable: false });
                 if (isFirstMarker) {
+                    // event listener so we can find out when the poly is closed.
                     google.maps.event.addListener(marker, 'click', function () {
-                        if (isClosed)
-                            return;
-                        var path = poly.getPath();
-                        poly.setMap(null);
-                        poly = new google.maps.Polygon({ map: map, path: path, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 2, fillColor: "#FF0000", fillOpacity: 0.35 });
+                        var path = currentLine.getPath();
+                        currentLine.setMap(null);
+                        currentLine = new google.maps.Polygon({ map: map, path: path, strokeColor: "#FF0000", strokeOpacity: 0.8, strokeWeight: 2, fillColor: "#FF0000", fillOpacity: 0.35 });
                         isClosed = true;
+                        existingLines.push(currentLine);
+                        currentLine = null;
                     });
                 }
-                google.maps.event.addListener(marker, 'drag', function (dragEvent) {
-                    poly.getPath().setAt(markerIndex, dragEvent.latLng);
-                });
-                poly.getPath().push(clickEvent.latLng);
+                /*google.maps.event.addListener(marker, 'drag', function (dragEvent) {
+                    currentLine.getPath().setAt(markerIndex, dragEvent.latLng);
+                });*/
+                currentLine.getPath().push(clickEvent.latLng);
             });
         //Polygon end here
-        }
+        };
 
         function staticmapimage()
         {
@@ -117,13 +121,13 @@
             var mapTypeId = map.getMapTypeId();
             var mapType;
             if(mapTypeId == google.maps.MapTypeId.ROADMAP) {
-                mapType = "Road"
+                mapType = "Road";
             }
             else if(mapTypeId == google.maps.MapTypeId.SATELLITE) {
-                mapType = "Sat"
+                mapType = "Sat";
             }
             else if(mapTypeId == google.maps.MapTypeId.HYBRID) {
-                mapType = "Hybrid"
+                mapType = "Hybrid";
             }
 
             // next build the json object to send back
@@ -137,22 +141,64 @@
                 mapType : mapType
             };
             // now use jquery to send the ajax request to our endpoint.
-            alert(JSON.stringify(result));
+            //alert(JSON.stringify(result));
             $.ajax({
                 type: 'POST',
                 url: '/savePointCollection',
                 data: JSON.stringify(result),
                 processData: false
             });
-        }
+        };
+
+        function savePoints() {
+            // find the list of polygons/lines/points
+            var polyResult = new Array();
+
+            for(i=0; i<existingLines.length; i++) {
+
+                var poly = new Array();
+
+                var working = existingLines[i].getPath();
+                for(j = 0; j < working.length; j++) {
+                    poly.push({lat : working.getAt(j).lat(), lng : working.getAt(j).lng()});
+                }
+                polyResult.push(poly);
+            }
+
+            // build the json object
+            var result = {
+                mapId : @pointCollection.id,
+                polyList : polyResult
+            };
+            // send request.
+            // now use jquery to send the ajax request to our endpoint.
+            //alert(JSON.stringify(result));
+            $.ajax({
+                type: 'POST',
+                url: '/savePoints',
+                data: JSON.stringify(result),
+                processData: false
+            });
+
+        };
     </script>
 </head>
 
 <body onload="initialize()">
     <div id="header"><p class="title">Map Builder ( @pointCollection.name )</p></div>
     <div id="mainBody">
-        <div id="sideBar"> <a onclick="saveMap()">save</a>
-        <a href="/staticmap" >Download</a></div>
+        <div id="sideBar">
+            <p>
+                <a onclick="saveMap()">save view</a>
+            </p>
+            <p>
+                <a onclick="savePoints()">save points</a>
+            </p>
+            <p>
+                <a onclick="staticmap()">save points</a>
+            </p>
+
+        </div>
         <div id="map_canvas"></div>
     </div>
 

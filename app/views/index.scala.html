@@ -49,11 +49,13 @@
 			var poly = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
 				google.maps.event.addListener(map, 'click', function (clickEvent)
 				{
-					if (isClosed)
-						return;
-					var markerIndex = poly.getPath().length;
-					var isFirstMarker = markerIndex === 0;
-					var marker = new google.maps.Marker({ map: map, position: clickEvent.latLng, draggable: true });
+                    var markerIndex = poly.getPath().length;
+                    var isFirstMarker = markerIndex === 0;
+                    if (isClosed)
+                        {   isClosed = false;
+						    return;
+                        }
+                    var marker = new google.maps.Marker({ map: map, position: clickEvent.latLng, draggable: true });
 					if (isFirstMarker) {
 						google.maps.event.addListener(marker, 'click', function () {
 							if (isClosed)
@@ -81,6 +83,7 @@
     <div id="mainBody">
         <div id="sideBar"> this is the side bar hopefully it does not get too big. </div>
         <div id="map_canvas"></div>
+
     </div>
 
 </body>

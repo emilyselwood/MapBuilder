@@ -43,6 +43,8 @@
 
             var map = new google.maps.Map($("#map_canvas").get(0), mapOptions);
 
+        //Polygon start here
+        //TODO: allow to draw multiple polygons
 			var isClosed = false;
 			var poly = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2 });
 				google.maps.event.addListener(map, 'click', function (clickEvent)
@@ -67,7 +69,8 @@
 					});
 				    poly.getPath().push(clickEvent.latLng);
 			    });
-            }
+        //Polygon end here
+                }
 
     </script>
 

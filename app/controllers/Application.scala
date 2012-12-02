@@ -9,17 +9,21 @@ object Application extends Controller {
 
   val defaultMap = PointCollection(0, "Default PointCollection", 0f, 0f, 3, "Sat")
 
-  val pointCollections = try {
-    PointCollection.getAll()
+  val pointCollections = PointCollection.getAll()
+
+  val working = if(pointCollections.isEmpty) {
+    PointCollection.insert(defaultMap)
   }
-  catch {
-    case e : Exception => List()
+  else {
+    pointCollections.head
   }
+
+
 
 
   def index = Action {
     try {
-      Ok(views.html.index(defaultMap))
+      Ok(views.html.index(working, pointCollections))
     }
     catch {
       case NonFatal(e) => InternalServerError(e.getMessage)

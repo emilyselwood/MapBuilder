@@ -1,4 +1,4 @@
-@(pointCollection : PointCollection)
+@(pointCollection : PointCollection, pointCollections : List[PointCollection])
 <!DOCTYPE html>
 <html>
 <head>
@@ -74,7 +74,7 @@
 </head>
 
 <body onload="initialize()">
-    <div id="header"><p class="title">Map Builder ( @pointCollection.name )</p></div>
+    <div id="header"><p class="title">Map Builder ( @pointCollection.name ) @pointCollections.length</p></div>
     <div id="mainBody">
         <div id="sideBar"> this is the side bar hopefully it does not get too big. </div>
         <div id="map_canvas"></div>

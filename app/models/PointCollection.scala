@@ -16,15 +16,6 @@ case class PointCollection(var id : Long, name : String,
 
 object PointCollection {
 
-  def unapply(value : String) : Option[PointCollection] = {
-    val Regex = "PointCollection\\(([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),([^,]*),[^)]*\\)".r
-
-    value match {
-      case Regex(id, name, centerX, centerY, zoomLevel, mapType, points) => Some(PointCollection(id.toInt, name, centerX.toDouble, centerY.toDouble, zoomLevel.toInt, mapType, List()))
-      case _ => None
-    }
-  }
-
   def getAll() : List[PointCollection] = {
 
     DB.withConnection { implicit c =>
@@ -75,6 +66,7 @@ object PointCollection {
           |    "zoomLevel" = {zoomLevel},
           |    "defaultStyle" = {defaultStyle}
           |WHERE id = {id}
+          |
         """.stripMargin).on(
         ("mapName"      -> point.name),
         ("centerX"      -> point.centerPointX),
@@ -103,6 +95,7 @@ object PointCollection {
           |   "zoomLevel",
           |   "defaultStyle")
           |values( {name}, {centerX}, {centerY}, {zoomLevel}, {defaultStyle} );
+          |
         """.stripMargin)
 
       query.on(("name"  -> point.name),

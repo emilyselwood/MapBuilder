@@ -1,6 +1,7 @@
 package controllers
 
 import play.api._
+import libs.json.{JsSuccess, JsResult, JsValue, Reads}
 import play.api.mvc._
 import models.PointCollection
 import util.control.NonFatal
@@ -19,8 +20,6 @@ object Application extends Controller {
   }
 
 
-
-
   def index = Action {
     try {
       Ok(views.html.index(working))
@@ -31,8 +30,6 @@ object Application extends Controller {
   }
 
   def savePointCollection = Action(parse.tolerantJson) { request =>
-    println(request.body)
-
 
     val id = (request.body \ "id").as[Long]
 
@@ -56,6 +53,30 @@ object Application extends Controller {
   }
 
 
+  implicit def listOfList = Reads.list[List[Point]](Reads.list[Point](Point.PointReads))
+
+  def savePoints = Action(parse.tolerantJson) { request =>
+    println(request.body)
+
+    //val mapId = (request.body \ "id").as[Long]
+
+    //val points = (request.body \ "polyList" ).as[List[List[Point]]]
+
+    //println("saving a selection of points *\\o/*")
+
+    Ok
+  }
 
 
 }
+
+object Point {
+  implicit def PointReads = new Reads[Point] {
+
+    def reads(js : JsValue) : JsResult[Point] = {
+      JsSuccess(Point((js \ "lat").as[Double], (js \ "lng").as[Double]))
+    }
+
+  }
+}
+case class Point(lat : Double, lng : Double)
